@@ -8,8 +8,7 @@ const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const mongoose = require("mongoose");
 const app = express();
-
-
+const geracaoOrdem = require("./public/JS/geracaoAutomatica.js")
 
 app.set('view engine', 'ejs'); // função para renderizar as views
 app.use(bodyParser.urlencoded({
@@ -25,6 +24,7 @@ mongoose.connect("mongodb+srv://admin-clever:Clever123@cluster0clever.wg8wg.mong
 app.get("/", function(req, res) { //função para renderizar a pagina de login
 
   res.render("index");
+  geracaoOrdem.geracaoAutomaticaOrdemDeServico();
 });
 
 app.get("/novoUsuario", function(req, res) {

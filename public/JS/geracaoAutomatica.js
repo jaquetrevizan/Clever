@@ -52,16 +52,16 @@ const maquinaSchema = {
     },
     };
       
-const Maquina = new mongoose.model("Maquina", maquinaSchema);
-const Ordem = new mongoose.model("ordems", ordemServicoSchema);
-const OrdemPreventiva = new mongoose.model("preventivas", ordemPreventivaSchema);
+const GA_Maquina = new mongoose.model("maquinas", maquinaSchema);
+const GA_Ordem = new mongoose.model("ordems", ordemServicoSchema);
+const GA_OrdemPreventiva = new mongoose.model("preventivas", ordemPreventivaSchema);
 
 async function buscarOrdensPreventivas(){
     connect()
 
     const moment = require('moment')
     const today = moment().startOf('day')
-    const ordensPreventivas = await OrdemPreventiva.find({
+    const ordensPreventivas = await GA_OrdemPreventiva.find({
         dataInicialPreventiva : { 
             $lt: moment(today).endOf('day').toDate() 
         }
@@ -73,7 +73,7 @@ async function buscarNumeroDeOrdemsDeServico(codigo, tipo){
     connect()
 
     const nomeOrdem = determinaNomeDaOrdem(codigo, tipo)
-    const ordem = await Ordem.find({ tituloOrdem : nomeOrdem })
+    const ordem = await GA_Ordem.find({ tituloOrdem : nomeOrdem })
 
     return ordem.length
 }
@@ -89,11 +89,11 @@ function determinaValorDaFrequencia(tipo){
     
     switch(tipo){
         case 'mensal': 
-            valor = date.getMonth(); break;
+            valor = date.getMonth() + 1; break;
         case 'trimestral': 
-            valor = Math.trunc((date.getMonth()-1)/3)+1 ; break;
+            valor = Math.trunc((date.getMonth())/3)+1; break;
         case 'semestral': 
-            valor = Math.trunc((date.getMonth()-1)/6)+1 ; break;
+            valor = Math.trunc((date.getMonth())/6)+1; break;
         case 'anual': 
             valor = date.getFullYear(); break;
     } 
@@ -115,7 +115,7 @@ async function criarOrdemDeServico(elemento) {
     const setor = await buscarSetorDaMaquina(elemento.maquinaPreventiva)
 
 
-    const novaOrdem = new Ordem({
+    const novaOrdem = new GA_Ordem({
         tituloOrdem: determinaNomeDaOrdem(
             elemento.codigoPreventiva,
             elemento.frequenciaPreventiva
@@ -142,7 +142,7 @@ async function buscarSetorDaMaquina(codMaquina){
     connect()
 
     let setor
-    const maquina = await Maquina.findOne({ idMaquina : codMaquina}).then((r) => {
+    const maquina = await GA_Maquina.findOne({ idMaquina : codMaquina}).then((r) => {
         try {
             setor = r.setorMaquina
             return setor
@@ -152,7 +152,7 @@ async function buscarSetorDaMaquina(codMaquina){
     })
 }
 
-async function geracaoAutomaticaOrdemDeServico() {
+const geracaoAutomaticaOrdemDeServico = async () => {
 
     const ordens = await buscarOrdensPreventivas()
     Array.from(ordens).forEach(
@@ -162,4 +162,4 @@ async function geracaoAutomaticaOrdemDeServico() {
     )    
 }
 
-exports.geracaoAutomaticaOrdemDeServico() = geracaoAutomaticaOrdemDeServico
+exports.geracaoAutomaticaOrdemDeServico = geracaoAutomaticaOrdemDeServico;
