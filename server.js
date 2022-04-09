@@ -2,6 +2,7 @@
 
 /////////////////////////////////nota: verificar campos de radio button que estão com "" e trocar para undefined nos ifs, revisar função de envio de email
 // na criação do usuario no usuariosFuncoes e functions.js
+///
 
 const express = require("express"); //definir a função para requerir os modulos do node-express
 const bodyParser = require("body-parser");
