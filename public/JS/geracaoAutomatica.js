@@ -69,12 +69,11 @@ async function buscarOrdensPreventivas(){
     return ordensPreventivas;
 }
 
-async function buscarNumeroDeOrdemsDeServico(codigo, tipo){
+async function buscarNumeroDeOrdemsDeServico(codigo, tipo, maquina){
     connect()
 
     const nomeOrdem = determinaNomeDaOrdem(codigo, tipo)
-    const ordem = await GA_Ordem.find({ tituloOrdem : nomeOrdem })
-
+    const ordem = await GA_Ordem.find({ tituloOrdem : nomeOrdem, maquinaPreventiva : maquina })
     return ordem.length
 }
 
@@ -103,10 +102,16 @@ function determinaValorDaFrequencia(tipo){
 async function verificaNecessidadeDeCriacaoDeOrdem(elemento){
     const quantidadeOrdens = await buscarNumeroDeOrdemsDeServico(
         elemento.codigoPreventiva,  
-        elemento.frequenciaPreventiva)
+        elemento.frequenciaPreventiva,
+        elemento.maquina)        
     if(quantidadeOrdens <= 0){
         criarOrdemDeServico(elemento)
     }
+}
+
+async function buscarNumeroUltimaOrdem() {
+    const ultimaOrdem = await GA_Ordem.find().sort({numeroOrdem:-1}).limit(1)
+    return ultimaOrdem[0].numeroOrdem
 }
 
 async function criarOrdemDeServico(elemento) {
@@ -116,6 +121,7 @@ async function criarOrdemDeServico(elemento) {
 
 
     const novaOrdem = new GA_Ordem({
+        numeroOrdem: await buscarNumeroUltimaOrdem() +1,
         tituloOrdem: determinaNomeDaOrdem(
             elemento.codigoPreventiva,
             elemento.frequenciaPreventiva
