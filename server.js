@@ -98,7 +98,16 @@ app.get("/criarOrdens", function(req, res) {
     console.log(count);
   });
 
-  res.render("criarOrdens");
+  User.find({
+    tipoUsuario: "Tecnico",
+  }, function(err, foundUser) {
+    console.log(foundUser)
+    res.render("criarOrdens", {
+      listaDeUsuarios: foundUser
+    });
+  });
+
+  //res.render("criarOrdens");
 });
 
 app.get("/pesquisarOrdensServico", function(req, res) {
@@ -1407,6 +1416,7 @@ app.post("/criarOrdens", function(req, res) {
     setor: req.body.setorOrdem,
     maquinaParada: req.body.maquinaParada,
     tipoOrdem: req.body.flexRadioDefault,
+    responsavel: req.body.responsavelOrdem,
     status: "Aberta"
 
   });
@@ -1422,11 +1432,11 @@ app.post("/criarOrdens", function(req, res) {
 
    var message = {
     from:"noreplyclever@gmail.com",
-    to:"lurnakata@gmail.com",
+    to:req.body.responsavelOrdem,
     subject:"Nova ordem - número: " + count,
     text:"Nova ordem de serviço criada!",
     html:"<h2>Nova ordem de serviço criada!</h2> <p>Título da ordem de serviço: " + req.body.tituloOrdem + "</p>" + "<p>Descrição: " + req.body.descricaoOrdem +"</p>" + "<p>Máquina: " + req.body.maquinaOrdem + "</p>" + "<p>Hora: " + req.body.horaOrdem + "</p>" + "<p>Data: " +
-    + req.body.dataOrdem + "</p>" + "<p>Setor: " + req.body.setorOrdem + "</p>" + "<p>Máquina parada? " + req.body.maquinaParada + "</p>" + "<p>Tipo da ordem: " + req.body.flexRadioDefault + "</p>" + "<p>Status: Aberta</p>",
+    + req.body.dataOrdem + "</p>" + "<p>Setor: " + req.body.setorOrdem + "</p>" + "<p>Máquina parada? " + req.body.maquinaParada + "</p>" + "<p>Tipo da ordem: " + req.body.flexRadioDefault + "</p>" + "<p>Status: Aberta</p>"+ "</p>" + "<p>Responsável: " + req.body.responsavelOrdem,
   };
 
   transport.sendMail(message);
