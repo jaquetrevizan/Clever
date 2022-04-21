@@ -1435,8 +1435,10 @@ app.post("/criarOrdens", function(req, res) {
     to:req.body.responsavelOrdem,
     subject:"Nova ordem - número: " + count,
     text:"Nova ordem de serviço criada!",
-    html:"<h2>Nova ordem de serviço criada!</h2> <p>Título da ordem de serviço: " + req.body.tituloOrdem + "</p>" + "<p>Descrição: " + req.body.descricaoOrdem +"</p>" + "<p>Máquina: " + req.body.maquinaOrdem + "</p>" + "<p>Hora: " + req.body.horaOrdem + "</p>" + "<p>Data: " +
-    + req.body.dataOrdem + "</p>" + "<p>Setor: " + req.body.setorOrdem + "</p>" + "<p>Máquina parada? " + req.body.maquinaParada + "</p>" + "<p>Tipo da ordem: " + req.body.flexRadioDefault + "</p>" + "<p>Status: Aberta</p>"+ "</p>" + "<p>Responsável: " + req.body.responsavelOrdem,
+    html:"<h2>Nova ordem de serviço criada!</h2> <p>Título da ordem de serviço: " + req.body.tituloOrdem + "</p>" + "<p>Descrição: " + req.body.descricaoOrdem 
+    +"</p>" + "<p>Máquina: " + req.body.maquinaOrdem + "</p>" + "<p>Hora: " + req.body.horaOrdem + "</p>" + "<p>Data: " +
+     req.body.dataOrdem + "</p>" + "<p>Setor: " + req.body.setorOrdem + "</p>" + "<p>Máquina parada: " + req.body.maquinaParada 
+    + "</p>" + "<p>Tipo da ordem: " + req.body.flexRadioDefault + "</p>" + "<p>Status: Aberta</p>"+ "</p>" + "<p>Responsável: " + req.body.responsavelOrdem,
   };
 
   transport.sendMail(message);
