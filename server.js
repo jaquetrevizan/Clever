@@ -1800,6 +1800,36 @@ app.post("/ordemPreventivaCriar", function(req, res) {
       console.log("Nova ordem salva!");
       var i = req.body.tituloOrdemPreventiva;
       res.send("Sua ordem preventiva foi criada com sucesso, o título dela é: " + i);
+
+
+      var transport = nodemailer.createTransport({
+        host:"smtp.gmail.com",
+        port:587,
+        auth: {
+          user:"noreplyclever@gmail.com",
+          pass:"Clever12#"
+        }
+      });
+    
+       var message = {
+        from:"noreplyclever@gmail.com",
+        to:req.body.responsavelOrdem,
+        subject:"Nova ordem preventiva - número: " + i,
+        text:"Nova ordem preventiva criada!",
+        html:"<h2>Nova ordem preventiva criada!</h2> <p>Título da ordem preventiva: " 
+        + req.body.tituloOrdemPreventiva 
+        +"</p>" + "<p>Máquina: " + req.body.maquinaOrdem + "</p>"  
+        + "<p>Data: " + req.body.dataOrdem + "</p>" 
+        + "</p>" + "<p>Frequencia: " + req.body.flexRadioDefault 
+        + "</p>"  + "<p>Responsável: " + req.body.responsavelOrdem
+        + "</p>" + "<p>Tarefas: " + req.body.listaTarefas ,
+      };
+    
+      transport.sendMail(message);
+
+
+
+
     }
   });
 }
