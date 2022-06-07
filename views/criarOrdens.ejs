@@ -102,6 +102,18 @@
           </div>
 
           <div class="mb-3">
+            <label for="Responsável pela Ordem" class="form-label" id="responsavelOrdemServico">Responsável pela oderm de serviço</label>
+           
+            <select class="form-select" name="responsavelOrdem" required>
+              <option value = "" selected>Selecione o nome do Responsável</option>
+              <% listaDeUsuarios.forEach(function(user) { %>
+                <option><%= user.email %></option>
+                <%  }); %>
+       
+            </select>
+        </div>
+
+          <div class="mb-3">
             <div class="form-group">
               <label for="descricaoOrdem" class="form-label">Descrição detalhada do ordem de serviço</label>
               <textarea class="form-control" id="descricaoOrdem" name="descricaoOrdem" rows="3" maxlength="500" required></textarea>
@@ -140,7 +152,7 @@
         <div class="mb-3">
 
           <label for="marcaItem" class="form-label">Data de abertura</label>
-          <input type="date" class="form-control" name="dataOrdem" id="dataOrdem" required>
+          <input type="date" class="form-control" name="dataOrdem" id="dataOrdem"  maxlength="1000" >
           <div id="dataOrdemHelp" class="form-text">Insira a data de abertura da ordem de serviço.</div>
 
         </div>
