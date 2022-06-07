@@ -98,12 +98,36 @@ app.get("/criarOrdens", function(req, res) {
   res.render("criarOrdens");
 });
 
-app.get("/pesquisarOrdensServico", function(req, res) {
-  res.render("pesquisarOrdensServico");
+app.get("/pesquisarOrdensServico", 
+
+function buscarMaquinas(req, res, next) {
+  Maquina.find({}, function (err, maquinas) {
+    if (err) next(err);
+    res.locals.foundMaquina = maquinas;
+    next();
+  });
+}, 
+
+function(req, res) {
+  res.render("pesquisarOrdensServico", {
+    listaDeMaquinas: res.locals.foundMaquina
+  });
 });
 
-app.get("/resultadoOrdens", function(req, res) {
-  res.render("resultadoOrdens");
+app.get("/resultadoOrdens", 
+
+function buscarUsuarios(req, res, next) {
+  User.find({tipoUsuario: "Tecnico"}, function (err, usuarios) {
+    if (err) next(err);
+    res.locals.foundUser = usuarios;
+    next();
+  });
+}, 
+
+function(req, res) {
+  res.render("resultadoOrdens", {
+    listaDeUsuarios: res.locals.foundUser
+  });
 });
 
 app.get("/ordemPreventivaCriar", function(req, res) {
@@ -118,32 +142,57 @@ app.get("/ordemPreventivaCriar", function(req, res) {
   });
 });
 
-app.get("/consultarPreventivas", function(req, res) {
+app.get("/consultarPreventivas", 
 
-  User.find({
-    tipoUsuario: "Tecnico",
-  }, function(err, foundUser) {
-    console.log(foundUser)
+  function buscarUsuarios(req, res, next) {
+    User.find({tipoUsuario: "Tecnico"}, function (err, usuarios) {
+      if (err) next(err);
+      res.locals.foundUser = usuarios;
+      next();
+    });
+  }, 
+
+  function buscarMaquinas(req, res, next) {
+    Maquina.find({}, function (err, maquinas) {
+      if (err) next(err);
+      res.locals.foundMaquina = maquinas;
+      next();
+    });
+  }, 
+
+  function renderizarForm(req, res) {
     res.render("consultarPreventivas", {
-      listaDeUsuarios: foundUser
+      listaDeUsuarios: res.locals.foundUser,
+      listaDeMaquinas: res.locals.foundMaquina
     });
-  });
-
 });
 
-app.get("/resultadoPreventivas", function(req, res) {
 
-  User.find({
-    tipoUsuario: "Tecnico",
-  }, function(err, foundUser) {
-    console.log(foundUser)
-    res.render("resultadoPreventivas", {
-      listaDeUsuarios: foundUser
-    });
+app.get("/resultadoPreventivas",
+
+function buscarUsuarios(req, res, next) {
+  User.find({tipoUsuario: "Tecnico"}, function (err, usuarios) {
+    if (err) next(err);
+    res.locals.foundUser = usuarios;
+    next();
   });
+}, 
 
+function buscarMaquinas(req, res, next) {
+  Maquina.find({}, function (err, maquinas) {
+    if (err) next(err);
+    res.locals.foundMaquina = maquinas;
+    next();
+  });
+}, 
 
+function renderizarForm(req, res) {
+  res.render("resultadoPreventivas", {
+    listaDeUsuarios: res.locals.foundUser,
+    listaDeMaquinas: res.locals.foundMaquina
+  });
 });
+
 
 app.get("/cadastrarMaquinas", function(req, res) {
   //res.render("cadastrarMaquinas");
@@ -169,8 +218,6 @@ app.get("/consultarMaquinas", function(req, res) {
   });
 });
 
-
-
 app.get("/processoMaquinas", function(req, res) {
   Maquina.find({}, function(err, foundMaquina) {
     console.log(foundMaquina)
@@ -195,7 +242,6 @@ app.get("/resultadoMaquinas", function(req, res) {
   User.find({
     tipoUsuario: "Tecnico",
   }, function(err, foundUser) {
-    console.log(foundUser)
     res.render("resultadoMaquinas", {
       listaDeUsuarios: foundUser
     });
@@ -255,8 +301,6 @@ app.get("/start", function(req, res) {
 
 
 ////////////////////////////////////funções para pesquisa de relatórios/////////////////////////
-
-
 app.post("/relatorios", function(req, res) {
     const idMaquina = req.body.idMaquina;
     const dataInicial = req.body.dataInicial;
@@ -479,8 +523,6 @@ app.post("/relatorios", function(req, res) {
 
   });
 
-
-
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
 //função para o banco de dados do registro de usuário
@@ -531,7 +573,6 @@ User.findOne({
 
 
 //função para logar com a busca do usuário
-
 app.post("/", function(req, res) {
   const login = req.body.login;
   const password = req.body.password;
@@ -554,6 +595,7 @@ app.post("/", function(req, res) {
     }
   });
 });
+
 ///////////////////////////// função para atualizar senha do usuario//////////////////////////////////
 app.post("/novaSenha", function(req, res) {
   const login = req.body.login;
@@ -673,7 +715,6 @@ else {
 );
 
 //___________________________________________________funções para salvar usuários no banco de dados pagina cadastrarUsuarioInternal_________________
-
 app.post("/cadastrarUsuarioInternal", function(req, res) {
   const novoUsuario = new User({
     login: req.body.nomeUsuario,
@@ -710,7 +751,6 @@ app.post("/cadastrarUsuarioInternal", function(req, res) {
 
 
 ///////////////////////////////// funções para consulta de usuários//////////////////////////////////////////
-
 app.post("/consultarEditarUsuarios", function(req, res) {
     const loginProcurado = req.body.loginProcurado;
     const nomeUsuarioProcurado = req.body.nomeUsuarioProcurado;
@@ -824,7 +864,6 @@ app.post("/editarUserUnico", function(req, res) {
 });
 
 //////////////////////////////////////// funções para atualizar usuário ///////////////////////////////////////////
-
 app.post("/resultadoUsuarios", function(req, res) {
 
   //atualiza o nome do usuário////
@@ -931,10 +970,7 @@ app.post("/deleteUser", function(req, res) {
   })
 });
 
-
-
 //////////////////////////// alterações para salvar itens da pagina Inventário no banco de dados////////////////////////////////
-
 const itemSchema = {
   idItem: String,
   descricaoItem: String,
@@ -986,7 +1022,6 @@ app.post("/inventario", function(req, res) {
 }
 });
 });
-
 
 //____________________________________________________________funções da página consultar itens______________________________________________
 app.route("/consultarEditarItensInventario")
@@ -1143,7 +1178,6 @@ app.route("/consultarEditarItensInventario")
   });
 
 /////////////////////////////////////////////// atualizar item ////////////////////////////////////
-
 app.post("/resultadosItens", function(req, res) {
 
   //atualiza o campo descrição
@@ -1259,7 +1293,6 @@ app.post("/resultadosItens", function(req, res) {
 });
 
 ////////////////////////////////////////////// função para deletar item ///////////////////////////////////
-
 app.post("/deleteItens", function(req, res) {
   const listaResultadoItens = req.body.listaResultadoItens;
   console.log(listaResultadoItens);
@@ -1275,8 +1308,8 @@ app.post("/deleteItens", function(req, res) {
     }
   })
 });
-////////////////////////////editar um unico item/////////////////////////
 
+////////////////////////////editar um unico item/////////////////////////
 app.post("/editarItemUnico", function(req, res) {
   const listaResultadoItens = req.body.listaResultadoItens;
   console.log(listaResultadoItens);
@@ -1296,7 +1329,6 @@ app.post("/editarItemUnico", function(req, res) {
 });
 
 ////////////////////////// atualizar item unico total ////////////////////////////////////////////
-
 app.post("/editarItemSelecionado", function(req, res) {
 
     Item.updateOne({
@@ -1326,7 +1358,6 @@ app.post("/editarItemSelecionado", function(req, res) {
   });
 
 //------------------------------------- funções de criação de ordens ----------------------------------//
-
 const ordemServicoSchema = {
   numeroOrdem: Number,
   tituloOrdem: String,
@@ -1346,13 +1377,11 @@ const ordemServicoSchema = {
 
 const Ordem = new mongoose.model("Ordem", ordemServicoSchema);
 
-
 Ordem.find().exec(function(err, results) {
   count = results.length
   count++;
   console.log(count);
 });
-
 
 app.post("/criarOrdens", function(req, res) {
 
@@ -1389,8 +1418,17 @@ app.post("/criarOrdens", function(req, res) {
 });
 
 /*--------------------------------Funções da parte de pesquisa de ordens de serviço-------------------------------------*/
+app.post("/pesquisarOrdensServico", 
 
-app.post("/pesquisarOrdensServico", function(req, res) {
+function buscarUsuarios(req, res, next) {
+  User.find({tipoUsuario: "Tecnico"}, function (err, usuarios) {
+    if (err) next(err);
+    res.locals.foundUser = usuarios;
+    next();
+  });
+},
+
+function(req, res) {
   const numeroOrdem = req.body.numeroOrdem;
   const tituloPesquisaOrdem = req.body.tituloPesquisaOrdem;
   const maquinaOrdem = req.body.maquinaOrdem;
@@ -1402,14 +1440,13 @@ app.post("/pesquisarOrdensServico", function(req, res) {
 
 
   if (numeroOrdem != "") { //procura pelo número da ordem
-    console.log(numeroOrdem);
     Ordem.find({
       numeroOrdem: numeroOrdem,
     }, function(err, foundOrdens) {
       if (!err) {
-        console.log(foundOrdens);
         res.render("resultadoOrdens", {
-          listaDeOrdens: foundOrdens
+          listaDeOrdens: foundOrdens, 
+          listaDeUsuarios: res.locals.foundUser
         });
       }
     });
@@ -1419,15 +1456,14 @@ app.post("/pesquisarOrdensServico", function(req, res) {
     //////////////////////////////inicia a busca vendo se o titulo não está vazio///////////////////////////////////////////////
 
     if (tituloPesquisaOrdem != "") {
-      console.log(tituloPesquisaOrdem);
       Ordem.find({
         tituloOrdem: tituloPesquisaOrdem,
       }, function(err, foundOrdens) {
         if (foundOrdens) {
           res.render("resultadoOrdens", {
-            listaDeOrdens: foundOrdens
+            listaDeOrdens: foundOrdens, 
+            listaDeUsuarios: res.locals.foundUser
           });
-          console.log(foundOrdens);
         } else {
           res.send(foundOrdens);
           res.render("resultadoOrdens", {
@@ -1441,15 +1477,14 @@ app.post("/pesquisarOrdensServico", function(req, res) {
       /////////////////////////////////////// faz a busca pelo campo maquinaOrdem se não está vazio////////////////////////////////////////////////
 
       if (maquinaOrdem != "") {
-        console.log(maquinaOrdem);
         Ordem.find({
           maquinaOrdem: maquinaOrdem,
         }, function(err, foundOrdens) {
           if (foundOrdens) {
             res.render("resultadoOrdens", {
-              listaDeOrdens: foundOrdens
+              listaDeOrdens: foundOrdens, 
+              listaDeUsuarios: res.locals.foundUser
             });
-            console.log(foundOrdens);
           } else {
             res.send("No ordem found!");
             console.log("No ordem found");
@@ -1459,15 +1494,14 @@ app.post("/pesquisarOrdensServico", function(req, res) {
 
         ////////////////////////////////////////////  procura pelo statusOrdem//////////////////////////////////
         if (statusOrdem != "") {
-          console.log(statusOrdem);
           Ordem.find({
             status: statusOrdem,
           }, function(err, foundOrdens) {
             if (foundOrdens) {
               res.render("resultadoOrdens", {
-                listaDeOrdens: foundOrdens
+                listaDeOrdens: foundOrdens, 
+                listaDeUsuarios: res.locals.foundUser
               });
-              console.log(foundOrdens);
             } else {
               res.send("No ordem found!");
               console.log("No ordem found");
@@ -1478,15 +1512,14 @@ app.post("/pesquisarOrdensServico", function(req, res) {
           //////////////////////////////////////////// procura pelo setor //////////////////////////////////
 
           if (setorOrdem != "") {
-            console.log(setorOrdem);
             Ordem.find({
               setor: setorOrdem,
             }, function(err, foundOrdens) {
               if (foundOrdens) {
                 res.render("resultadoOrdens", {
-                  listaDeOrdens: foundOrdens
+                  listaDeOrdens: foundOrdens, 
+                  listaDeUsuarios: res.locals.foundUser
                 });
-                console.log(foundOrdens);
               } else {
                 res.send("No ordem found!");
                 console.log("No ordem found");
@@ -1496,15 +1529,14 @@ app.post("/pesquisarOrdensServico", function(req, res) {
 
             /////////////////////////////////////////// Procutara pela data de abertura /////////////////////////////////////
             if (dataOrdemAbertura != "") {
-              console.log(dataOrdemAbertura);
               Ordem.find({
                 marcaItem: dataOrdemAbertura,
               }, function(err, foundOrdens) {
                 if (foundOrdens) {
                   res.render("resultadoOrdens", {
-                    listaDeOrdens: foundOrdens
+                    listaDeOrdens: foundOrdens, 
+                    listaDeUsuarios: res.locals.foundUser
                   });
-                  console.log(foundOrdens);
                 } else {
                   res.send("No ordem found!");
                   console.log("No ordem found");
@@ -1515,15 +1547,14 @@ app.post("/pesquisarOrdensServico", function(req, res) {
               ////////////////////////////////////  procura pela data de fechamento ///////////////////////////////////////
 
               if (dataOrdemFechamento != "") {
-                console.log(dataOrdemFechamento);
                 Ordem.find({
                   dataFinal: dataOrdemFechamento,
                 }, function(err, foundOrdens) {
                   if (foundOrdens) {
                     res.render("resultadoOrdens", {
-                      listaDeOrdens: foundOrdens
+                      listaDeOrdens: foundOrdens, 
+                      listaDeUsuarios: res.locals.foundUser
                     });
-                    console.log(foundOrdens);
                   } else {
                     res.send("No ordem found!");
                     console.log("No ordem found");
@@ -1536,15 +1567,14 @@ app.post("/pesquisarOrdensServico", function(req, res) {
                 ////////////////////////////////////  procura pelo tipo de ordem ///////////////////////////////////////
 
                 if (flexRadioDefault != undefined) {
-                  console.log(flexRadioDefault);
                   Ordem.find({
                     tipoOrdem: flexRadioDefault,
                   }, function(err, foundOrdens) {
                     if (foundOrdens) {
                       res.render("resultadoOrdens", {
-                        listaDeOrdens: foundOrdens
+                        listaDeOrdens: foundOrdens, 
+                        listaDeUsuarios: res.locals.foundUser
                       });
-                      console.log(foundOrdens);
                     } else {
                       res.send("No ordem found!");
                       console.log("No ordem found");
@@ -1567,8 +1597,6 @@ app.post("/pesquisarOrdensServico", function(req, res) {
 });
 
 /*----------------------------- atualizar campos das ordens ------------------------------------------*/
-
-
 app.post("/resultadoOrdens", function(req, res) {
 
   //atualiza o campo descrição do serviço realizado
@@ -1698,7 +1726,6 @@ const Preventiva = new mongoose.model("Preventiva", ordemPreventivaSchema);
 
 app.post("/ordemPreventivaCriar", function(req, res) {
 
-
   const newOrdemPreventiva = new Preventiva({
 
     codigoPreventiva: req.body.tituloOrdemPreventiva,
@@ -1736,7 +1763,17 @@ app.post("/ordemPreventivaCriar", function(req, res) {
 });
 
 //---------------------------------------- pesquisar ordem preventiva ------------------------------------------------------//
-app.post("/consultarPreventivas", function(req, res) {
+app.post("/consultarPreventivas", 
+
+function buscarUsuarios(req, res, next) {
+  User.find({tipoUsuario: "Tecnico"}, function (err, usuarios) {
+    if (err) next(err);
+    res.locals.foundUser = usuarios;
+    next();
+  });
+},  
+
+function(req, res) {
   const tituloOrdemPreventiva = req.body.tituloOrdemPreventiva;
   const maquinaOrdem = req.body.maquinaOrdem;
   const dataOrdem = req.body.dataOrdem;
@@ -1748,17 +1785,14 @@ app.post("/consultarPreventivas", function(req, res) {
   //inicia procura pelos parâmetros passados
 
   if (tituloOrdemPreventiva != "") {
-    console.log(tituloOrdemPreventiva);
     Preventiva.find({
       codigoPreventiva: tituloOrdemPreventiva,
     }, function(err, foundPreventiva) {
       if (foundPreventiva) {
-        //res.send(foundPreventiva)
-        console.log(foundPreventiva)
         res.render("resultadoPreventivas", {
           listaDeOrdensPreventivas: foundPreventiva,
+          listaDeUsuarios: res.locals.foundUser
         });
-        console.log(foundPreventiva);
       } else {
         console.log("No preventiva found")
       }
@@ -1766,48 +1800,45 @@ app.post("/consultarPreventivas", function(req, res) {
 
   } else {
     if (maquinaOrdem != "") {
-      console.log(maquinaOrdem);
       Preventiva.find({
         maquinaPreventiva: maquinaOrdem,
       }, function(err, foundPreventiva) {
         if (foundPreventiva) {
           //res.send(foundPreventiva)
           res.render("resultadoPreventivas", {
-            listaDeOrdensPreventivas: foundPreventiva
+            listaDeOrdensPreventivas: foundPreventiva,
+            listaDeUsuarios: res.locals.foundUser
           });
-          console.log(foundPreventiva);
         } else {
           console.log("No preventiva found")
         }
       });
     } else {
       if (responsavelOrdem != "") {
-        console.log(responsavelOrdem);
         Preventiva.find({
           responsavelPreventiva: responsavelOrdem,
         }, function(err, foundPreventiva) {
           if (foundPreventiva) {
             //  res.send(foundPreventiva)
             res.render("resultadoPreventivas", {
-              listaDeOrdensPreventivas: foundPreventiva
+              listaDeOrdensPreventivas: foundPreventiva,
+              listaDeUsuarios: res.locals.foundUser
             });
-            console.log(foundPreventiva);
           } else {
             console.log("No preventiva found")
           }
         });
       } else {
         if (frequencia != "") {
-          console.log(frequencia);
           Preventiva.find({
             frequenciaPreventiva: frequencia,
           }, function(err, foundPreventiva) {
             if (foundPreventiva) {
               //  res.send(foundPreventiva)
               res.render("resultadoPreventivas", {
-                listaDeOrdensPreventivas: foundPreventiva
+                listaDeOrdensPreventivas: foundPreventiva,
+                listaDeUsuarios: res.locals.foundUser
               });
-              console.log(foundPreventiva);
             } else {
               console.log("No preventiva found")
             }
@@ -1897,7 +1928,6 @@ const Maquina = new mongoose.model("Maquina", maquinaSchema);
 
 app.post("/cadastrarMaquinas", function(req, res) {
 
-
   const newMaquina = new Maquina({
 
     idMaquina: req.body.idMaquina,
@@ -1936,7 +1966,6 @@ app.post("/cadastrarMaquinas", function(req, res) {
 });
 
 //////////////////////////////// função para excluirMaquinas /////////////////
-
 app.post("/excluirMaquinas", function(req, res) {
 
   const flexRadioDefault = req.body.flexRadioDefault;
@@ -2086,7 +2115,6 @@ app.post("/consultarMaquinas", function(req, res) {
 });
 
 //////////////////////////// editar máquinas //////////////////////////////////
-
 app.post("/resultadoMaquinas", function(req, res) {
 
   // atualiza o campo  nome da máquina
@@ -2201,8 +2229,6 @@ app.post("/resultadoMaquinas", function(req, res) {
 });
 
 ///////editar apenas uma máquina por vez////////////////////////
-
-
 app.post("/editarMaquinaUnica", function(req, res){
 const idMaquina = req.body.idMaquina;
 
@@ -2218,7 +2244,6 @@ Maquina.find({
 });
 
 //////////////////////////////////////////////////// atualizar uma máquina por vez /////////////////////////////
-
 app.post("/atualizarMaquina", function(req, res) {
 
   const idMaquina = req.body.idMaquina;
@@ -2248,9 +2273,7 @@ app.post("/atualizarMaquina", function(req, res) {
 
 });
 
-
 ////////////////////////////////////////cadastra sensores para monitoramento///////////////////////////////////////
-
 const sensorSchema = {
   idMaquina: String,
   idSensor: String,
@@ -2260,7 +2283,6 @@ const sensorSchema = {
 }
 
 const Sensor = new mongoose.model("Sensor", sensorSchema);
-
 
 app.post("/processoMaquinas", function(req, res) {
   const idMaquina = req.body.idMaquina ;
@@ -2293,11 +2315,8 @@ app.post("/processoMaquinas", function(req, res) {
 
 });
 
-
 //https://mongoosejs.com/docs/queries.html explicação das queries usando where
-
 //____________________________________________________________________________________________________________________________________________________
-
 app.listen(process.env.PORT || 3000, function() { //função para definir as portas do servidor
   console.log("Servidor rodando");
 });

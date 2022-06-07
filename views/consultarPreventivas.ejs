@@ -104,12 +104,10 @@
             <label for="maquinaOrdem" class="form-label">Máquina</label>
 
             <select class="form-select" name="maquinaOrdem" >
-              <option value= "" selected>Selecione a máquina desejada</option>
-              <option value="BT100">BT100</option>
-              <option value="BT101">BT101</option>
-              <option value="BT102">BT102</option>
-              <option value="BT103">BT103</option>
-              <option value="BT104">BT104</option>
+              <option value = "" selected>Selecione a máquina desejada</option>
+              <% listaDeMaquinas.forEach(function(maquinas) { %>
+              <option><%= maquinas.idMaquina %></option>
+              <%  }); %>
             </select>
             <div id="maquinaOrdemHelp" class="form-text">Selecione a máquina que deseja atribuir a ordem Preventiva.</div>
           </div>
@@ -132,7 +130,6 @@
             <% listaDeUsuarios.forEach(function(user) { %>
             <option><%= user.nomeCompleto %></option>
             <%  }); %>
-
           </select>
           <div id="responsavelOrdemHelp" class="form-text">Selecione o nome do responsável técnico da ordem preventiva.</div>
         </div>

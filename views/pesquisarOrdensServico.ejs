@@ -111,11 +111,9 @@
 
             <select class="form-select" name="maquinaOrdem" >
               <option value = "" selected>Selecione a máquina desejada</option>
-              <option value="BT100">BT100</option>
-              <option value="BT101">BT101</option>
-              <option value="BT102">BT102</option>
-              <option value="BT103">BT103</option>
-              <option value="BT104">BT104</option>
+              <% listaDeMaquinas.forEach(function(maquinas) { %>
+              <option><%= maquinas.idMaquina %></option>
+              <%  }); %>
             </select>
             <div id="maquinaOrdemHelp" class="form-text">Selecione a máquina que deseja pesquisar a OS.</div>
           </div>
