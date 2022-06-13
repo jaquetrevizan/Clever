@@ -1431,6 +1431,23 @@ Ordem.find().exec(function(err, results) {
   console.log(count);
 });
 
+
+
+
+app.get("/excluirOrdem", function(req, res) {
+  console.log("get para excluir");
+
+Ordem.deleteOne({ numeroOrdem: 181}, function (err) {
+  if (err) return handleError(err);
+  console.log( req.body.numeroOrdem);
+  console.log("foi");
+});
+
+
+  res.render("pesquisarOrdensServico");
+
+});
+
 app.post("/criarOrdens", function(req, res) {
 
   const newOrdem = new Ordem({
