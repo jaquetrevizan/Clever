@@ -98,14 +98,21 @@ app.get("/criarOrdens", function(req, res) {
     console.log(count);
   });
 
-  User.find({
-    tipoUsuario: "Tecnico",
-  }, function(err, foundUser) {
-    console.log(foundUser)
-    res.render("criarOrdens", {
-      listaDeUsuarios: foundUser
+      // funções estão encadeadas callback
+      //função para buscar as máquinas
+       //função para buscar os usuários
+
+       Maquinas.find().exec(function(err, foundMaquina){
+        User.find({ tipoUsuario: "Tecnico",
+     }, function(err, foundUser) {
+        console.log(foundUser),
+        res.render("criarOrdens", {  //funçao render que passa dois parametros que são os dados buscados
+        listaDeUsuarios: foundUser,
+        listaMaquinas: foundMaquina,
+      });
     });
-  });
+  
+    });
 
   //res.render("criarOrdens");
 });
@@ -144,15 +151,23 @@ function(req, res) {
 
 app.get("/ordemPreventivaCriar", function(req, res) {
 
-  User.find({
-    tipoUsuario: "Tecnico",
-  }, function(err, foundUser) {
-    console.log(foundUser)
-    res.render("ordemPreventivaCriar", {
-      listaDeUsuarios: foundUser
+      // funções estão encadeadas callback
+      //função para buscar as máquinas
+       //função para buscar os usuários
+
+       Maquinas.find().exec(function(err, foundMaquina){
+        User.find({ tipoUsuario: "Tecnico",
+     }, function(err, foundUser) {
+        console.log(foundUser),
+        res.render("criarOrdens", {  //funçao render que passa dois parametros que são os dados buscados
+        listaDeUsuarios: foundUser,
+        listaMaquinas: foundMaquina,
+      });
     });
+  
+    });
+
   });
-});
 
 app.get("/consultarPreventivas", 
 
@@ -2026,6 +2041,24 @@ app.post("/resultadoPreventivas", function(req, res) {
 
 
 });
+
+///////////////////////////////////////////// Bucar máquinas /////////////////////////////////////
+const maquinasSchema = {
+  idMaquina: String,
+  nomeMaquina: String,
+  descricaoMaquina: String,
+  turnoTrabalho: String,
+  setorMaquina: String,
+  tecnicoMaquina: String,
+  criticidadeMaquina: Number,
+  dataInstalacaoMaquina: Date,
+  itensCriticos: {
+    type: [String]
+  },
+};
+
+const Maquinas = new mongoose.model("Maquinas",maquinasSchema );
+////////////////////////////////////////////////////////////////////////////////////////////////////// 
 
 ///////////////////////////////////////////// cadastrar máquinas /////////////////////////////////////
 const maquinaSchema = {
