@@ -96,7 +96,7 @@
         <form name="resultadoOrdens" action="/resultadoOrdens" method="post">
           <div class="mb-3">
             <label for="numeroOrdem" class="form-label" id="tituloOrdemServico">Número da ordem de serviço</label>
-            <input type="number" class="form-control" name="numeroOrdem" id="tituloOrdem" maxlength="100" required>
+            <input type="number" class="form-control" name="numeroOrdem" id="tituloOrdem" maxlength="100" >
             <div id="ordemHelp" class="form-text">Insira o número da ordem de serviço</div>
           </div>
 
@@ -119,8 +119,8 @@
           </div>
 
 
-          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
-          <a href="pesquisarOrdensServico" class="btn btn-primary"><i class="fas fa-long-arrow-alt-left"></i> Voltar</a>
+          <!--  <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button> -->
+          <!--  <a href="pesquisarOrdensServico" class="btn btn-primary"><i class="fas fa-long-arrow-alt-left"></i> Voltar</a> -->
 
 
       </div>
@@ -208,7 +208,7 @@
       <div class="conteudoBottonResultadoOrdens">
 
         <table class="table">
-    <thead>
+      <thead>
       <tr>
         <th scope="col">Número</th>
         <th scope="col">Titulo</th>
@@ -220,9 +220,9 @@
         <th scope="col">Status</th>
 
       </tr>
-    </thead>
+      </thead>
 
-    <tbody>
+      <tbody>
       <% listaDeOrdens.forEach(function(ordem) { %>
       <tr>
         <td><%= ordem.numeroOrdem %></td>
@@ -234,7 +234,32 @@
         <td><%= ordem.tipoOrdem %></td>
         <td><%= ordem.status %></td>
       </tr>
-<%  }); %>
+      <%  }); %>
+
+
+        <!-- <form action="/deleteOrdemServico" method="post">  -->
+        <!-- <form action="/excluirOrdem2" method="post"> -->
+        <div class="form-group">
+          <p class="ordensCabecalho">Lista de ordens encontradas:</p>
+        
+          <label for="resultadoItens" class="form-label">Resultado da pesquisa:</label>
+          <select multiple class="form-control" id="resultadoItens" onchange="editar(this)" name="listaOrdemSelect">
+
+            <% listaDeOrdens.forEach(function(ordem) { %>
+              <option value="<%= ordem.numeroOrdem %>"><%= "Ordem "+  ordem.numeroOrdem + ", " + ordem.tituloOrdem + ", "+ordem.maquinaOrdem + ", "+ ordem.status %></option>
+            <%  }); %>
+      
+          </select>
+          <div id="pesquisaUsuariosHelp" class="form-text">Selecione a ordem :</div>
+        
+
+          <button type="submit" class="btn btn-primary" formaction="/excluirOrdem2" ><i class="fas fa-trash"></i> Excluir</button>
+          <button type="submit" class="btn btn-primary" formaction="/editandoOrdens" ><i class="fas fa-pencil-alt"></i> Editar</button>
+          <br>
+            
+          
+          <br>
+
     </tbody>
 
   </table>

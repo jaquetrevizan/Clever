@@ -117,6 +117,71 @@ app.get("/criarOrdens", function(req, res) {
   //res.render("criarOrdens");
 });
 
+
+
+app.post("/editandoOrdens", function(req, res) {
+
+      // funções estão encadeadas callback
+      //função para buscar as máquinas
+       //função para buscar os usuários
+
+       const listaOrdemSelect2 = req.body.listaOrdemSelect;   //aqui pega ordem selecionada
+       console.log(listaOrdemSelect2);
+       global.numeroParaEditar = listaOrdemSelect2;    //usa global
+     
+
+       Maquinas.find().exec(function(err, foundMaquina){
+        User.find({ tipoUsuario: "Tecnico",
+     }, function(err, foundUser) {
+       
+        res.render("editarOrdens", {  //funçao render que passa os parametros que são os dados buscados
+        listaDeUsuarios: foundUser,
+        listaMaquinas: foundMaquina,
+        numeroOrdem:listaOrdemSelect2,
+        teste01: "teste passado"
+
+          
+      });
+    });
+  
+    });
+    console.log(global.numeroParaEditar );
+  //res.render("criarOrdens");
+});
+
+
+app.post("/editandoOrdensPreventiva", function(req, res) {
+
+  // funções estão encadeadas callback
+  //função para buscar as máquinas
+   //função para buscar os usuários
+
+   const listaOrdemSelect4 = req.body.listaOrdemSelectPrev;   //aqui pega ordem selecionada
+   console.log(listaOrdemSelect4);
+   global.codigoParaEditar = listaOrdemSelect4;    //usa global
+ 
+
+   Maquinas.find().exec(function(err, foundMaquina){
+    User.find({ tipoUsuario: "Tecnico",
+ }, function(err, foundUser) {
+   
+    res.render("ordemPreventivaEditar", {  //funçao render que passa os parametros que são os dados buscados
+    listaDeUsuarios: foundUser,
+    listaMaquinas: foundMaquina,
+    codigoPreventiva:listaOrdemSelect4,
+    teste01: "teste passado"
+
+      
+  });
+});
+
+});
+console.log(global.codigoParaEditar );
+//res.render("criarOrdens");
+});
+
+
+
 app.get("/pesquisarOrdensServico", 
 
 function buscarMaquinas(req, res, next) {
@@ -1447,19 +1512,83 @@ Ordem.find().exec(function(err, results) {
 });
 
 
+///////////////  rota  para excluir ordens ///////////////
+app.post("/excluirOrdem2", function(req, res) {
+  const listaOrdemSelect1 = req.body.listaOrdemSelect;   //aqui pega ordem selecionada
+  const numero = req.body.listaOrdemSelect.numeroOrdem;
+  console.log("rota para excluir ordem selecionada");
+  console.log(listaOrdemSelect1);
+
+  Ordem.findOneAndDelete({
+    numeroOrdem: listaOrdemSelect1
+  }, function(err){
+    if (!err){
+      console.log("Sucesso");
+      res.render("mensagemOrdenServico");
+     //res.send("Ordem selecionada excluida com sucesso !!");
+    } else{
+      res.send("Erro!");
+    }
+  })
 
 
-app.get("/excluirOrdem", function(req, res) {
-  console.log("get para excluir");
 
-Ordem.deleteOne({ numeroOrdem: 181}, function (err) {
-  if (err) return handleError(err);
-  console.log( req.body.numeroOrdem);
-  console.log("foi");
+
 });
 
 
-  res.render("pesquisarOrdensServico");
+///////////////  rota  para excluir ordens Preventicas  ///////////////
+app.post("/excluirOrdemPrev", function(req, res) {
+  const listaOrdemSelect3 = req.body.listaOrdemSelectPrev;   //aqui pega ordem selecionada
+  //const numero = req.body.listaOrdemSelect.numeroOrdem;      //aqui muda depois,mas e para pegar qual editar  tem erro aqui
+  console.log("rota para excluir ordem selecionada");        //so pra log mesmo
+  console.log(listaOrdemSelect3);
+
+  Preventiva.findOneAndDelete({
+    codigoPreventiva: listaOrdemSelect3
+  }, function(err){
+    if (!err){
+      console.log("Sucesso");
+      res.render("mensagemOrdenPreventiva");
+     //res.send("Ordem selecionada excluida com sucesso !!");
+    } else{
+      res.send("Erro!");
+    }
+  })
+
+
+
+
+});
+
+
+
+
+///////////////  rota  para excluir ordens ///////////////
+app.post("/excluirOrdem", function(req, res) {
+  console.log("rota para excluir ordem selecionada");
+  const listaOrdemSelect = req.body.listaOrdemSelect;   //aqui pega ordem selecionada
+
+  Ordem.findOneAndDelete({
+    numeroOrdem: listaOrdemSelect
+  }, function(err){
+    if (!err){
+      console.log("Sucesso");
+      res.render("pesquisarOrdensServico");
+    } else{
+      res.send("Erro!");
+    }
+  })
+
+
+//Ordem.deleteOne({ numeroOrdem: 181}, function (err) {
+//  if (err) return handleError(err);
+//  console.log( req.body.numeroOrdem);
+//  console.log("foi");
+//});
+
+
+ // res.render("pesquisarOrdensServico");
 
 });
 
@@ -1522,6 +1651,9 @@ app.post("/criarOrdens", function(req, res) {
 
 /*--------------------------------Funções da parte de pesquisa de ordens de serviço-------------------------------------*/
 app.post("/pesquisarOrdensServico", 
+
+
+     
 
 function buscarUsuarios(req, res, next) {
   User.find({tipoUsuario: "Tecnico"}, function (err, usuarios) {
@@ -1698,6 +1830,9 @@ function(req, res) {
     }
   }
 });
+
+
+
 
 /*----------------------------- atualizar campos das ordens ------------------------------------------*/
 app.post("/resultadoOrdens", function(req, res) {
@@ -2394,6 +2529,91 @@ Maquina.find({
 
 });
 
+
+////// atualizar ordem criado por: xxx ///////////////////////////
+app.post("/atualizarOrdem",function(req,res){
+
+  const numeroOrdem = global.numeroParaEditar;
+  const consttituloOrdem = req.body.tituloOrdem;
+  const descricaoOrdem = req.body.descricaoOrdem;
+  const maquinaOrdem= req.body.maquinaOrdem;
+  const horaInicial= req.body.horaOrdem;
+  const horaFinal= req.body.horaFinal;
+  const dataInicial= req.body.dataOrdem;
+  const setor= req.body.setorOrdem;
+  const maquinaParada= req.body.maquinaParada;
+  const tipoOrdem= req.body.flexRadioDefault;
+  const responsavel= req.body.responsavelOrdem;
+  const status = req.body.statusOrdem;
+  
+  Ordem.updateOne({
+    numeroOrdem: numeroOrdem
+  }, {
+    
+    tituloOrdem: consttituloOrdem,
+    descricaoOrdem: descricaoOrdem,
+    maquinaOrdem: maquinaOrdem,
+    horaInicial: horaInicial,
+    horaFinal: horaFinal,
+    dataInicial: dataInicial,
+    setor: setor,
+    maquinaParada: maquinaParada,
+    tipoOrdem: tipoOrdem,
+    responsavel: responsavel,
+    status: status
+  },
+  function(err) {
+    if (!err) {
+        res.render("mensagemOrdenServico")
+    } else {
+      res.send("erro, não foi possível fazer atualização da ordem selecionada");
+    }
+  }
+);
+  
+
+});
+
+
+
+////// atualizar ordem criado por: xxx ///////////////////////////
+app.post("/atualizarOrdemPreventiva",function(req,res){
+
+  const codigoPreventiva = global.codigoParaEditar;
+  const maquinaPreventiva = req.body.maquinaOrdem;
+  const dataInicialPreventiva = req.body.dataOrdem;
+  const responsavelPreventiva= req.body.responsavelOrdem;
+  const frequenciaPreventiva= req.body.flexRadioDefault;
+  const tarefasPreventiva= req.body.lista;
+  console.log("codigoPreventiva");
+  console.log(codigoPreventiva);
+  
+  Preventiva.updateOne({
+    codigoPreventiva: codigoPreventiva
+  }, {
+
+    maquinaPreventiva: maquinaPreventiva,
+    dataInicialPreventiva : dataInicialPreventiva,
+    responsavelPreventiva : responsavelPreventiva,
+    frequenciaPreventiva :frequenciaPreventiva,
+    tarefasPreventiva : tarefasPreventiva
+
+
+
+  },
+  function(err) {
+    if (!err) {
+        res.render("mensagemOrdenPreventiva")
+    } else {
+      res.send("erro, não foi possível fazer atualização da ordem selecionada");
+    }
+  }
+);
+  
+
+});
+
+
 //////////////////////////////////////////////////// atualizar uma máquina por vez /////////////////////////////
 app.post("/atualizarMaquina", function(req, res) {
 
@@ -2415,7 +2635,7 @@ app.post("/atualizarMaquina", function(req, res) {
     },
     function(err) {
       if (!err) {
-          res.render("mensagemSucesso")
+          res.render("mensagemSucesso")   
       } else {
         res.send("erro, não foi possível fazer atualização da máquina selecionada");
       }

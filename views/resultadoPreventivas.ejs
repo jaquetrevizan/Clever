@@ -96,7 +96,7 @@
         <form name="resultadoPreventivas" action="/resultadoPreventivas" method="post">
           <div class="mb-3">
             <label for="tituloOrdemPreventiva" class="form-label" id="tituloOrdemPre">Código da ordem preventiva</label>
-            <input type="text" class="form-control" name="tituloOrdemPreventiva" id="tituloOrdemPreventiva" maxlength="10" required>
+            <input type="text" class="form-control" name="tituloOrdemPreventiva" id="tituloOrdemPreventiva" maxlength="10" >
             <div id="ordemHelp" class="form-text">Insira o código da ordem preventiva para atualizar</div>
           </div>
 
@@ -112,8 +112,8 @@
             <div id="maquinaOrdemHelp" class="form-text">Selecione a máquina que deseja atribuir a ordem Preventiva.</div>
           </div>
 
-          <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
-          <a href="consultarPreventivas" class="btn btn-primary"><i class="fas fa-long-arrow-alt-left"></i> Voltar</a>
+          <!-- <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button> -->
+          <!-- <a href="consultarPreventivas" class="btn btn-primary"><i class="fas fa-long-arrow-alt-left"></i> Voltar</a> -->
 
 
   </div>
@@ -179,6 +179,7 @@
             </tr>
           </table>
 
+          
 
 
       </div>
@@ -189,6 +190,23 @@
           </div>
 
           <div class="conteudoBottonResultadoPreventiva">
+
+            <div class="form-group">
+              <p class="ordensCabecalho">Lista de ordens encontradas:</p>
+            
+              <label for="resultadoItens" class="form-label">Resultado da pesquisa:</label>
+              <select multiple class="form-control" id="resultadoItens" onchange="editar(this)" name="listaOrdemSelectPrev">
+    
+                <% listaDeOrdensPreventivas.forEach(function(Preventiva) { %>
+                  <option value="<%= Preventiva.codigoPreventiva %>"><%= "Ordem : "+  Preventiva.codigoPreventiva + ", "  + ", "+Preventiva.maquinaPreventiva + ", "+ Preventiva.frequenciaPreventiva %></option>
+                <%  }); %>
+          
+              </select>
+              <div id="pesquisaUsuariosHelp" class="form-text">Selecione a ordem :</div>
+
+              <button type="submit" class="btn btn-primary" formaction="/excluirOrdemPrev" ><i class="fas fa-trash"></i> Excluir</button>
+              <button type="submit" class="btn btn-primary" formaction="/editandoOrdensPreventiva" ><i class="fas fa-pencil-alt"></i> Editar</button>
+              <br>
 
             <table class="table">
         <thead>
