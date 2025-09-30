@@ -48,7 +48,7 @@ Para rodar este projeto localmente, siga os passos:
 
 ```bash
 # Clone o repositório
-git clone https://github.com/jaquelinetrevizan/clever.git
+git clone https://github.com/jaquetrevizan/clever.git
 
 # Acesse o diretório do projeto
 cd clever
