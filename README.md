@@ -73,5 +73,4 @@ Durante o desenvolvimento deste sistema, tivemos contato com:
 * Implementação de **CRUD completo** (usuários, máquinas, ordens de serviço).
 * Integração de **serviço de e-mails** para automação de notificações.
 * Experiência de **deploy em nuvem** via Heroku.
-```
 
